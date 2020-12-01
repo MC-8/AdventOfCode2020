@@ -1,4 +1,3 @@
-from copy import deepcopy
 ls = []
 for s in open('1.in','r').readlines():
     ls.append(int(s))
