@@ -4,7 +4,6 @@ for s in open('1.in','r').readlines():
     ls.append(int(s))
 
 def one(ls):
-    l = deepcopy(ls)
     for i1, num1 in enumerate(ls):
         for i2, num2 in enumerate(ls):
             if ((i1!=i2) and (num1+num2==2020)):
@@ -12,7 +11,6 @@ def one(ls):
     return -1
 
 def two(ls):
-    l = deepcopy(ls)
     for i1, num1 in enumerate(ls):
         for i2, num2 in enumerate(ls):
             for i3, num3 in enumerate(ls):
