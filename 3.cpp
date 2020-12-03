@@ -49,7 +49,6 @@ int main(int argc, char **kwargs)
     string s;
     vector<string> ls;
     std::string chars = "\n\r";
- 
 
     while( getline( infile, s ) ) // for each line read from the file
     {
