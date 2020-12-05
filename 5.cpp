@@ -41,7 +41,7 @@ int main(int argc, char **kwargs)
         std::replace( s.begin(), s.end(), 'B','1'); 
         std::replace( s.begin(), s.end(), 'L','0'); 
         std::replace( s.begin(), s.end(), 'R','1'); 
-        sids.insert(static_cast<int>(bitset<11>(s).to_ulong()));
+        sids.insert(bin_str_to_int(s));
     }
          
     std::cout << "one = " << one(sids) << '\n'; // 980
