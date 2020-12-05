@@ -1,9 +1,6 @@
 #include "aoc.hpp"
 
 using namespace std;
-using my_key_t = string;
-using my_val_t = string;
-using passport_field_value_t = unordered_map<my_key_t,my_val_t>;
 
 const string inputname = "5.in";
 using input_list_t = set<int>;
