@@ -34,5 +34,5 @@ def two(ls):
     return valid
 
 if __name__ == "__main__":
-    print(f"{one(ls) = }")
-    print(f"{two(ls) = }")
+    print(f"{one(ls) = }") # 603
+    print(f"{two(ls) = }") # 404
