@@ -138,3 +138,6 @@ dmypy.json
 
 # .vscode folder
 .vscode/*.*
+
+# Generated output files
+.out
