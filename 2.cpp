@@ -62,8 +62,8 @@ int main(int argc, char **kwargs)
         ls.push_back(line);
     }
 
-    cout << "one = " << one(ls) << '\n';
-    cout << "two = " << two(ls) << '\n';
+    cout << "one = " << one(ls) << '\n'; // 603
+    cout << "two = " << two(ls) << '\n'; // 404
 
     return 0;
 }

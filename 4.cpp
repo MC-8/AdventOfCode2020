@@ -178,8 +178,8 @@ int main(int argc, char **kwargs)
     // Last dictionary not yet added
     ls.push_back(d);
     
-    std::cout << "one = " << one(ls) << '\n';
-    std::cout << "two = " << two(ls) << '\n';
+    std::cout << "one = " << one(ls) << '\n'; // 228
+    std::cout << "two = " << two(ls) << '\n'; // 175
 
     return 0;
 }

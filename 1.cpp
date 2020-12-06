@@ -57,8 +57,8 @@ int main(int argc, char **kwargs)
         ls.push_back(std::stoi(line));
     }
 
-    cout << "one = " << one(ls) << '\n';
-    cout << "two = " << two(ls) << '\n';
+    cout << "one = " << one(ls) << '\n'; // 494475
+    cout << "two = " << two(ls) << '\n'; // 267520550
 
     return 0;
 }
