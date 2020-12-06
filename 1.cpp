@@ -10,10 +10,12 @@ const string inputname = "1.in";
 template <typename T>
 T one(vector<T> & ls)
 {
+    sort(ls.begin(), ls.end());
     for (int i = 0; i < ls.size(); ++i)
     {
-        for (int j = 0; j < ls.size(); ++j) 
+        for (int j = i+1; j < ls.size(); ++j) 
         {
+            if (ls[i]+ls[j] > 2020) break;
             if ((i!=j) && (ls[i]+ls[j] == 2020))
             {
                 return ls[i]*ls[j];
@@ -26,12 +28,14 @@ T one(vector<T> & ls)
 template <typename T>
 T two(vector<T> & ls)
 {
+    sort(ls.begin(), ls.end());
     for (int i = 0; i < ls.size(); ++i)
     {
-        for (int j = 0; j < ls.size(); ++j) 
+        for (int j = i+1; j < ls.size(); ++j) 
         {
-            for (int k = 0; k < ls.size(); ++k) 
+            for (int k = j+1; k < ls.size(); ++k) 
             {
+                if (ls[i]+ls[j]+ls[k] > 2020) break;
                 if ((i!=j) && (j!=k) && (ls[i]+ls[j]+ls[k] == 2020))
                 {
                     return ls[i]*ls[j]*ls[k];
