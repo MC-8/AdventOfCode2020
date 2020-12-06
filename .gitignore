@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Executables
-.exe
+*.exe
 
 # Extensionless files
 *
@@ -140,4 +140,4 @@ dmypy.json
 .vscode/*.*
 
 # Generated output files
-.out
+*.out
