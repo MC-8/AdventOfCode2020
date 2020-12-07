@@ -8,17 +8,8 @@ d = {}
 rules = {}
 allbags = set()
 for s in open('7.in','r').readlines():
-    pattern = "^(\S+ \S+){1}"
-    match = re.search(pattern, s)
-    parent = match[0]
-    pattern = "(\d \S+ \S+ bags?)"
-    match = re.findall(pattern, s)
-    children = []
-    for m in match:
-        l = m.split() # "4 drab silver bags" -> ['4','drab','silver','bags']
-        child = bag_pair(l[1]+' '+l[2],int(l[0])) # ("drab silver", 4)
-        children.append(child)
-    rules[parent] = children
+    match = re.findall("((\S+ \S+) (?:bags? contain){1}|(\d) (\S+ \S+) (?:bags?))", s)
+    rules[match[0][1]] = [bag_pair(m[3],int(m[2])) for m in match[1:] if len(match)>1]
 
 def one():
     wcsg = set() # who contains shiny gold?
