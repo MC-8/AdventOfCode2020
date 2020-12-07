@@ -4,9 +4,7 @@ import re
 from collections import namedtuple
 
 bag_pair = namedtuple('bag_pair', ['name','nr'])
-d = {}
 rules = {}
-allbags = set()
 for s in open('7.in','r').readlines():
     match = re.findall("((\S+ \S+) (?:bags? contain){1}|(\d) (\S+ \S+) (?:bags?))", s)
     rules[match[0][1]] = [bag_pair(m[3],int(m[2])) for m in match[1:] if len(match)>1]
