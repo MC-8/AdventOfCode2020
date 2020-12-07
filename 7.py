@@ -33,10 +33,7 @@ def one():
 #     return retval
 
 def count_bags_in(bag):
-    bags = 0
-    for r in rules[bag]:
-        bags += r.nr*(1 + count_bags_in(r.name))
-    return bags
+    return sum(r.nr*(1 + count_bags_in(r.name)) for r in rules[bag])
 
 def two():
     return count_bags_in("shiny gold")
