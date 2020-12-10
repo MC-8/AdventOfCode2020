@@ -1,8 +1,4 @@
 from copy import deepcopy
-import itertools
-import re
-from collections import namedtuple
-from matplotlib import pyplot as plt
 import math
 
 ls = set()
@@ -10,8 +6,9 @@ for s in open('10.in','r').readlines():
     x = s.rstrip('\n')
     ls.add(int(x))
 
-
 def one(ls):
+    # Not really a tidy solution but it follows the idea that of reaching the
+    # next joltage with the least available adapter
     l = deepcopy(ls)
     current_jolt = 0
     one_diffs = 0
@@ -28,73 +25,7 @@ def one(ls):
             three_diffs+=1
             l.remove((current_jolt+3))
             current_jolt += 3
-    return one_diffs*(three_diffs+1)
-
-def valid_sequence(ls):
-    l = deepcopy(ls)
-    current_jolt = 0
-    # while True:
-    ml = max(l)
-    for _ in range(len(l)):
-        if ((current_jolt+1) in l):
-            l.remove(current_jolt+1)
-            current_jolt += 1
-        elif ((current_jolt+2) in l):
-            l.remove((current_jolt+2))
-            current_jolt += 2
-        elif ((current_jolt+3) in l):
-            l.remove((current_jolt+3))
-            current_jolt += 3
-        # else: return False
-    if current_jolt==ml:
-        return True
-    else:
-        return False
-
-def count_jumps(ls):
-    l = deepcopy(ls)
-    current_jolt = 0
-    jumps = 0
-    sl = sorted([x for x in l])
-    removables = set()
-    for x in sl:
-        if ((x+2) in sl):
-            if (x+1) in sl:
-                jumps+=1
-                print(f"{x+1} can be removed")
-                removables.add(x+1)
-        if ((x+3) in sl):
-            if (x+1) in sl:
-                jumps+=1
-                print(f"{x+1} can be removed")
-                removables.add(x+1)
-            if (x+2) in sl:
-                jumps+=1
-                print(f"{x+2} can be removed")
-                removables.add(x+2)
-    return len(removables)
-    
-def twos(ls):
-    l = deepcopy(ls)
-    sl = sorted([x for x in l])
-    combinations_exp = 0
-    sl.append(max(sl)+3)
-    exps = []
-    e = 0
-    for x in (sl[:-1]):
-        if valid_sequence(set(sl) ^ {x}):
-            combinations_exp+=1
-            print(f"Removing {x} OK")
-            e += 1
-        else:
-            print(f"Removing {x} NO")
-            exps.append(e)
-            e = 0
-    print(f"{exps=}")
-    possbs = [pow(2,x) if (x<3) else pow(2,x)-(x-2) for x in exps] # 296196766695424 296196766695424
-    possbs = [pow(2,x)-max(0,x-2) for x in exps]
-    print(f"{possbs=}")
-    return math.prod(possbs)
+    return one_diffs*(three_diffs+1) # +1 because includes the final jump
     
 def two(ls:set):
     # The explanation here is convoluted but it's like a brain dump at this point (I'm tired)
