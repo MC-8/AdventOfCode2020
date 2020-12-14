@@ -1,3 +1,11 @@
+# To ignore extensionless files, use the following 3 steps
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -131,13 +139,8 @@ dmypy.json
 # Executables
 *.exe
 
-# Extensionless files
-*
-!/**/
-!*.*
-
 # .vscode folder
-.vscode/*.*
+.vscode/
 
 # Generated output files
 *.out
