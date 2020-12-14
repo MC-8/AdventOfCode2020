@@ -8,6 +8,9 @@
 #include <set>
 #include <deque>
 #include <numeric>
+#include <cmath>
+#include <functional>
+
 using namespace std;
 
 bool is_numeric(string s)
