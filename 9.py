@@ -8,7 +8,6 @@ for s in open('9.in','r').readlines():
 
 def one(ls):
     buff = deque(maxlen=25)
-    i = 0
     for n in ls:
         if len(buff)==25:
             if not(any_2_sum(buff,n)==n):

@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <unordered_map>
 #include <set>
+#include <deque>
+#include <numeric>
 using namespace std;
 
 bool is_numeric(string s)
