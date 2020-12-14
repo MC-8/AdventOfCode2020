@@ -26,8 +26,6 @@ def one(lin):
             r = ""
             ic = 0
             for col in row:
-                # if ic==91: continue
-                # if ir==95: continue
                 if (col=="L"):
                     count = 0
                     for dc,dr in product(range(-1,2,1),range(-1,2,1)):
