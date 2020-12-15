@@ -10,6 +10,8 @@ from itertools import product, permutations
 
 from pulp import LpMinimize, LpProblem, PULP_CBC_CMD, LpStatus, lpSum, LpVariable, LpInteger
 
+from tqdm import tqdm
+
 import pretty_errors
 pretty_errors.configure(
     separator_character = '*',
