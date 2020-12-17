@@ -8,7 +8,6 @@ with open('17.in','r') as fp:
 
 def augment(space):
     new_space = {}
-    spc = deepcopy(space)
     for coord,cube in space.items():
         for d in product(*[(1,0,-1) for _ in range(len(coord))]):
             nc=tuple(coord+np.array(d))
@@ -17,6 +16,7 @@ def augment(space):
             elif d==tuple([0 for _ in range(len(coord))]):
                 new_space[nc]=cube
     return new_space
+
 def pad(some_tuple:tuple, max_len:int, pad_char:int=0)->tuple:
     return some_tuple+(pad_char,)*(max_len-len(some_tuple))
     
