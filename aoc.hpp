@@ -24,6 +24,16 @@ int bin_str_to_int(string s)
     return static_cast<int>(bitset<32>(s).to_ulong());
 }
 
+unsigned long long bin_str_to_ull(string s)
+{
+    return static_cast<unsigned long long>(bitset<64>(s).to_ullong());
+}
+
+string int_to_bin_str(unsigned long long s)
+{
+    return static_cast<string>(bitset<32>(s).to_string());
+}
+
 std::vector<std::string> split_string(const std::string& str, char delim)
 {
   std::vector<std::string> tokens;
