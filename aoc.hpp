@@ -11,6 +11,7 @@
 #include <cmath>
 #include <functional>
 #include <iomanip>
+#include <chrono>
 
 using namespace std;
 
@@ -75,4 +76,15 @@ constexpr auto enumerate(T && iterable)
         auto end() { return iterator{ 0, std::end(iterable) }; }
     };
     return iterable_wrapper{ std::forward<T>(iterable) };
+}
+
+// https://stackoverflow.com/a/36315819/2575507
+#define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+#define PBWIDTH 60
+void printProgress(double percentage) {
+    int val = (int) (percentage * 100);
+    int lpad = (int) (percentage * PBWIDTH);
+    int rpad = PBWIDTH - lpad;
+    printf("\r%3d%% [%.*s%*s]", val, lpad, PBSTR, rpad, "");
+    fflush(stdout);
 }
