@@ -1,7 +1,6 @@
-# %%
 from utils import *
 photo = {}
-input_txt = open('20ex.in','r').read()
+# input_txt = open('20ex.in','r').read()
 input_txt = open('20.in','r').read()
 
 for tile_data in input_txt.split('\n\n'):
@@ -81,4 +80,3 @@ def two():
 if __name__ == "__main__":
     print(f"{one() = }") # 
     print(f"{two() = }") # 
-# %%
