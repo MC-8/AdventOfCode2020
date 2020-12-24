@@ -1,13 +1,13 @@
 # %%
-from math import trunc
 from utils import *
 
 rules = {}
 messages = []
 re_rules = ["(\d+):([ 0-9]+)\|?([ 0-9]+)?", "(\d+): ""([ \S]+)"""]
 
-with open('19ex.in','r') as fp:
-    # l = fp.readline()
+with open('19.in','r') as fp:
+    # This parsing is ugly, next time try using splitlines() to isolate first part from second
+    # And avoid regex, just split by characters :,| etc
     for l in fp.readlines():
         if re.search("\d+",l):
             for rule in re_rules:
@@ -16,146 +16,83 @@ with open('19ex.in','r') as fp:
                     for i in range(len(match[1:])):
                         r = [int(x) if x.isnumeric() else x.replace('"','') for x in match[i+1].split()]
                         if r:
-                            rules[key] = rules.get(key, []) + [r]
+                            if r==['a'] or r==['b']:
+                                rules[key] = r[0]
+                            else:
+                                rules[key] = rules.get(key, []) + [r]
         else:
             if l!='\n': messages.append(l.strip('\n'))
-    # while l!='\n':
-    #     rules.append(l.rstrip('\n'))
-    #     l = fp.readline()
-    # l = fp.readline()
-    # while l:
-    #     messages.append(l.strip('\n'))
-    #     l = fp.readline()
-        
 
-# #%%
-# def make_chain(rules, r):
-#     chain = rules[r][0]
-#     subchain = []
-#     for p in rules[r]:
-#         for c in p:
-#             subchain.append([x for x in rules[c]])
-#     return subchain
-
-def flatten(l):
-    # returns a string if the elements of a list are characters, otherwise returns the list itself
-    s = ''
-    for x in l:
-        if x=='a' or x=='b':
-            s+=x
-        else:
-            return l
-    return s
-    
-def resolve_rule(n):
-    c = []
-    if str(n) in 'ab':
-        return n
-    if rules[n]==[['a']] or rules[n]==[['b']]:
-        return rules[n][0][0]
+def resolve_rule(n,rules,cache={}):
+    if n in cache: return cache[n]
+    r = rules[n]
+    if isinstance(r,str): return r
+    sc = []
     for group in rules[n]:
-        sc = []
-        for el in group:
-            sc += flatten(resolve_rule(el))
-        c.append(flatten(sc))
-    return [flatten(c)]
+        T = [resolve_rule(x,rules,cache) for x in group]
+        sc += [''.join(x) for x in product(*T)]
+    cache[n] = sc
+    return sc
 
-def show_rule(n):
-    pass
-[[['a', [[['aa', 'bb'], ['ab', 'ba']], [['ab', 'ba'], ['aa', 'bb']]], 'b']]]
-print(f"{resolve_rule(0)=}")
-print(f"{resolve_rule(1)=}")
-print(f"{resolve_rule(2)=}")
-print(f"{resolve_rule(3)=}")
-print(f"{resolve_rule(4)=}")
-print(f"{resolve_rule(5)=}")
-print(f"{flatten('a')=}")
-print(f"{flatten('a')=}")
-print(f"{flatten(['a', 'b'])=}")
-print(f"{flatten([['a', 'b'], ['b', 'a']])=}")
+def resolve_rule2(n,rules,cache={}):
+    if n in cache: return cache[n]
+    r = rules[n]
+    if isinstance(r,str): return r
+    sc = []
+    for group in rules[n]:
+        T = [resolve_rule2(x,rules,cache) for x in group]
+        sc += [''.join(x) for x in product(*T)]
+    cache[n] = sc
+    return sc
 
-def unravel(X):
-    print(f"{X=}")
-    R = ''
-    if not isinstance(X[0], list):
-        return ''.join(y for y in X)
-    else:
-        for P in product(*X[0]):
-            R+=unravel(list(P))
-    return R
-D = []
-first_part = [['aa', 'bb'], ['ab', 'ba']]
-second_part = [['cc', 'dd'], ['cd', 'dc']]
-F = set()
-for x in product(*first_part): 
-    F.add(''.join(y for y in x))
-print("------------------------------------------------------------")
-print(F)
-print("------------------------------------------------------------")
-S = set()
-for x in product(*second_part): 
-    S.add(''.join(y for y in x))
-print(S)
-print("------------------------------------------------------------")
-for x in product(F,S):
-    print(''.join(y for y in x))
-print("------------------------------------------------------------")
-
-# print("------------------------------------------------------------")
-# unravel([[['aa', 'bb'], ['ab', 'ba']], [['ab', 'ba'], ['aa', 'bb']]])
-# print("------------------------------------------------------------")
-
-print(f"{resolve_rule(0)=}")
-print("------------------------------------------------------------")
-print(f"{unravel(resolve_rule(0))=}")
-print("------------------------------------------------------------")
-
-def find_match(s,rr):
-    mtch = True
-    consumed_chars = 0
-    if isinstance(rr,str):
-        return s[:len(rr)]==rr,len(rr),s[len(rr):]
-    else:
-        while(rr or mtch):
-            mtch = False
-            rr_c = deepcopy(rr)
-            for r in rr_c:
-                m,l,_ =find_match(s,r)
-                mtch|=m
-                if m:
-                    consumed_chars+=l
-                    s=s[l:]
-                    rr.remove(r)
-                    break
-            if not mtch: break
-    return mtch,consumed_chars,s[consumed_chars:]
-
-# s = 'abcd'
-# found = True
-
-# while found and len(s)>0:
-#     found,c,s = find_match(s,'ab')
-#     print((found,s,c))
-    
-s = 'ababbb'
-found = True
-
-r = [[['a', [[['aa', 'bb'], ['ab', 'ba']], [['ab', 'ba'], ['aa', 'bb']]], 'b']]]
-while found and len(s)>0:
-    found,c,s = find_match(s,r)
-    print((found,s,c))
-    
-
-
-def one(rules, messages):
+def one(rules):
     sol = 0
+    rr = set(resolve_rule(0,rules,{}))
+    for msg in messages:
+        if msg in rr:
+            sol+=1
     return sol
     
-def two(rules, messages):
-    return 0
+def two(rules):
+    sol = 0
+    # 0: 8 11
+    # 8: 42 | 8
+    # 11: 42 31 | 42 11 31
+    # Which means that the strings would be composed by
+    # [1..N] chunks of rule[42]
+    # Then [1..M] chunks of rule[31]
+    
+    r42 = resolve_rule(42, rules)
+    r31 = resolve_rule(31, rules)
+    len42 = len(r42[0]) # assumes all chunks have equal length
+    len31 = len(r31[0]) # assumes all chunks have equal length
+    
+    # # Use sets for speed
+    # r42 = set(r42)
+    # r31 = set(r31)
+    for msg in messages:
+        # Count M+N instances of r42 from the beginning and must satisfy NM>N>0
+        M = 0
+        NM = 0
+        while msg:
+            if msg[:len42] in r42:
+                msg = msg[len42:]
+                NM+=1
+            else:
+                break
+        # Next, count M instances of r31 from the end of the last
+        while msg:
+            if msg[:len31] in r31:
+                msg = msg[len31:]
+                M+=1
+            else: 
+                break
+        # Match if NM>N>0 and we read the whole message till the end
+        if NM>M>0 and not msg:
+            sol+=1
+    return sol
 
 if __name__ == "__main__":
-    print(f"{one(rules, messages) = }") # 
-    print(f"{two(rules, messages) = }") # 
-    pass
+    print(f"{one(rules) = }") # 226
+    print(f"{two(rules) = }") # 355
 # %%
