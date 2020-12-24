@@ -144,3 +144,7 @@ dmypy.json
 
 # Generated output files
 *.out
+
+# Example files
+*ex.in
+*ex*.in
