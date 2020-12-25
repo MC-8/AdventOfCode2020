@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 
 import numpy as np
@@ -23,3 +24,5 @@ pretty_errors.configure(
     line_color          = pretty_errors.RED + '> ' + pretty_errors.default_config.line_color,
     code_color          = '  ' + pretty_errors.default_config.line_color,
 )
+
+from typing import NewType
