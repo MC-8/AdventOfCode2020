@@ -1,6 +1,6 @@
 from __future__ import annotations
 import re
-
+from enum import Enum
 import numpy as np
 from math import lcm, prod
 
