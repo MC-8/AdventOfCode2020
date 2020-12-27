@@ -1,18 +1,18 @@
-from re import match
+from numpy.lib.function_base import flip
 from utils import *
 
 class direction(Enum):
-    MOVE_U = (-1,0)
-    MOVE_R = (0,1)
-    MOVE_D = (1,0)
-    MOVE_L = (0,-1)
+    U = (-1,0)
+    R = (0,1)
+    D = (1,0)
+    L = (0,-1)
 
 def next_dir(dir: direction)->direction:
     newdir = dir
-    if dir==direction.MOVE_U: newdir = direction.MOVE_R
-    if dir==direction.MOVE_R: newdir = direction.MOVE_D
-    if dir==direction.MOVE_D: newdir = direction.MOVE_L
-    if dir==direction.MOVE_L: newdir = direction.MOVE_U
+    if dir==direction.U: newdir = direction.R
+    if dir==direction.R: newdir = direction.D
+    if dir==direction.D: newdir = direction.L
+    if dir==direction.L: newdir = direction.U
     return newdir
 
 def next_spiral_idxs(idxs: tuple[int, int], current_dir:direction) -> tuple[int,int]:
@@ -20,8 +20,8 @@ def next_spiral_idxs(idxs: tuple[int, int], current_dir:direction) -> tuple[int,
     return (a,b)
     
 photo = {}
-input_txt = open('20ex.in','r').read()
-is_example = True
+# input_txt = open('20ex.in','r').read()
+# is_example = True
 input_txt = open("20.in", "r").read()
 is_example = False
 
@@ -103,7 +103,7 @@ def assemble_image_indexes(photo: dict[int, list[str]]) -> dict[tuple[int, int],
     img_idx = {}
     i_col = i_row = 0
     current_tile = -1
-    current_dir = direction.MOVE_R
+    current_dir = direction.R
     # 1) Find corner tile
     for tile_n, tile_map in deepcopy(photo_snippets).items():
         if is_corner_tile(tile_map, photo_snippets):
@@ -316,6 +316,117 @@ def build_large_image(image_idx_map:dict[tuple[int,int],int]) -> list[str]:
         current_leftmost_tile = left_tile
     return large_image
 
+
+
+# Assemble big picture
+# Pick any picture, its coordinates will be (0,0), starting picture of the big picture
+# then for each remaining tile try to match them to the tiles in the big pitcure until none are left
+def which_border_matches(border, tile):
+    #-1 no border
+    # 0,1,2,3: UP, RIGHT, DOWN, LEFT
+    bt = borders_of(tile)
+    for i in range(4):
+        if bt[i]==border:
+            return i
+    return -1
+
+def assemble_big_picture(photo: dict[int, list[str]]):
+    tiles = deepcopy(photo)
+    bp = {}
+    # bp[(0,0,1951)] = flip_tile(photo[1951], up_down=True)
+    # tiles.pop(1951)
+    for k,v in deepcopy(tiles).items():
+        bp[(0,0,k)] = v
+        tiles.pop(k)
+        break
+    while tiles:
+        for bp_tile_pos, bp_tile_data in deepcopy(bp).items():
+            borders_bp_tile = borders_of(bp_tile_data)
+            for tile_key, tile_to_match in deepcopy(tiles).items():
+                # Try match normal version
+                bp_tile_border_to_match = direction.U
+                found = False
+                for ib,b in enumerate(borders_bp_tile):
+                    
+                    # Try all borders of the target tile against the first tile border
+                    for _ in range(4):
+                        b2 = borders_of(tile_to_match)[(ib+2)%4]
+                        if b==b2:
+                            newx,newy = (bp_tile_pos[0] + bp_tile_border_to_match.value[0], bp_tile_pos[1] + bp_tile_border_to_match.value[1])
+                            bp[(newx,newy,tile_key)] = tile_to_match
+                            tiles.pop(tile_key)
+                            found = True
+                        tile_to_match = deepcopy(rotate_tile(tile_to_match))
+                    tile_to_match = deepcopy(flip_tile(tile_to_match))
+                    if not found:
+                        for _ in range(4):
+                            b2 = borders_of(tile_to_match)[(ib+2)%4]
+                            if b==b2:
+                                newx,newy = (bp_tile_pos[0] + bp_tile_border_to_match.value[0], bp_tile_pos[1] + bp_tile_border_to_match.value[1])
+                                bp[(newx,newy,tile_key)] = tile_to_match
+                                tiles.pop(tile_key)
+                                found = True
+                            tile_to_match = deepcopy(rotate_tile(tile_to_match))
+                        tile_to_match = deepcopy(flip_tile(tile_to_match,up_down=True))
+                    if not found:
+                        for _ in range(4):
+                            b2 = borders_of(tile_to_match)[(ib+2)%4]
+                            if b==b2:
+                                newx,newy = (bp_tile_pos[0] + bp_tile_border_to_match.value[0], bp_tile_pos[1] + bp_tile_border_to_match.value[1])
+                                bp[(newx,newy,tile_key)] = tile_to_match
+                                tiles.pop(tile_key)
+                                found = True
+                            tile_to_match = deepcopy(rotate_tile(tile_to_match))
+                    # Next
+                    bp_tile_border_to_match = next_dir(bp_tile_border_to_match)
+    return bp
+
+def remove_all_borders(big_picture:dict[tuple[int,int,int],list[str]]):
+    tile_width = 0
+    tile_height = 0
+    for k,v in deepcopy(big_picture).items():
+        tile_width = len(v[0])
+        tile_height = len(v)
+        break
+    max_x=max_y=min_x=min_y=0
+    for k in big_picture.keys():
+        max_x = max(max_x, k[0])
+        max_y = max(max_y, k[1])
+        min_x = min(min_x, k[0])
+        min_y = min(min_y, k[1])
+    new_picture = np.chararray((((abs(max_x-min_x)+1)*(tile_height-2)), 
+                          ((abs(max_y-min_y)+1))*(tile_width-2)), unicode=True)
+    for xyk, tile_data in big_picture.items():
+        chunk_top_left_x = (xyk[0]-min_x)*(tile_width-2)
+        chunk_top_left_y = (xyk[1]-min_y)*(tile_height-2)
+        td_arr = []
+        for y in tile_data:
+            td_arr.append([x for x in y])
+        new_picture[chunk_top_left_x:chunk_top_left_x+tile_width-2,
+                    chunk_top_left_y:chunk_top_left_y+tile_height-2] = np.asarray(td_arr)[1:-1,1:-1]
+    return new_picture
+    
+monster =[
+"                  # ",
+"#    ##    ##    ###",
+" #  #  #  #  #  #   "
+]
+hash_to_check = []
+for ir,r in enumerate(monster):
+    for ic,c in enumerate(r):
+        if c=='#':
+            hash_to_check.append((ir,ic))
+# print(hash_to_check)
+
+def is_monster(picture, starting_corner):
+    res = True
+    for coords in hash_to_check:
+        r = starting_corner[0]+coords[0]
+        c = starting_corner[1]+coords[1]
+        res &= picture[r][c]=='#'
+    return res
+
+
 def one():
     sol = 1
     for t1_num, t1_map in photo.items():
@@ -325,25 +436,44 @@ def one():
 
 
 def two():
-    # I'm very tired and will solve it by hand
-    sol = 0
-    idxs= assemble_image_indexes(photo)
-    large_image = build_large_image(idxs)
-    large_image = flip_tile(large_image, up_down=True)
-    print("=======================================================")
-    for row in large_image: print(row)
-    large_image = rotate_tile(large_image)
-    print("=======================================================")
-    for row in large_image: print(row)
-    large_image = rotate_tile(large_image)
-    print("=======================================================")
-    for row in large_image: print(row)
-    large_image = rotate_tile(large_image)
-    print("=======================================================")
-    for row in large_image: print(row)
-    print("=======================================================")
-    
-    return sol
+    bp = assemble_big_picture(photo)
+    # print(bp)
+    tp = remove_all_borders(bp)
+    # print(tp)
+    cols = tp[0].size
+    rows = int(tp.size/cols)
+    for r in range(rows):
+        s = ''
+        for c in range(cols):
+            s+=tp[r,c]
+        # print(s)
+    monster_count = 0
+    tpl = tp.tolist()
+    i = 0
+    while monster_count==0: 
+        for r in range(rows-len(monster)):
+            for c in range(cols-len(monster[0])):
+                if is_monster(tpl, (r,c)):
+                    monster_count+=1
+        if monster_count==0 and i not in [4,8]:
+            tpl = rotate_tile(tpl)
+            # print("Rotate")
+        if monster_count==0 and i==4:
+            tpl = flip_tile(tpl)
+            # print("Flip LR")
+        if monster_count==0 and i==8:
+            tpl = flip_tile(tpl, True)
+            # print("Flip UD")
+        i+=1
+    # print(monster_count)
+    # Count all '#' tiles, then subtract monster tiles
+    monster_tiles = len(hash_to_check)
+    hash_count = 0
+    for r in range(rows):
+        for c in range(cols):
+            if tpl[r][c]=='#':
+                hash_count+=1
+    return hash_count-(monster_count*monster_tiles)
 
 
 if __name__ == "__main__":
