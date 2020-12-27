@@ -477,5 +477,5 @@ def two():
 
 
 if __name__ == "__main__":
-    print(f"{one() = }")  #
-    print(f"{two() = }")  #
+    print(f"{one() = }")  # 18482479935793
+    print(f"{two() = }")  # 2118
